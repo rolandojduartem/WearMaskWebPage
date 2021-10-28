@@ -2,18 +2,13 @@
 
 {% block title %}
     <meta name="description" content="Use the Mask! - Instructions">
-
-    <meta name="keywords" content="Machine Learning, Deep Learning, Rolando Jesús Duarte Mejías, portfolio, mask">
-
-    <meta name="author" content="Rolando Jesús Duarte Mejías">
     <title>Wear the Mask! - App</title>
     {{ turbo() }}
 {% endblock %}
 
-
 {% block camera %}
     {% include "probabilities.html" %}
-    <img src="{{ url_for('video_feed') }}">
+    <img src="{{ url_for('video_feed') }}" alt="Wear the mask - Stream">
 {% endblock %}
 
 {% block portfolio %}
