@@ -17,7 +17,7 @@ from flask import Flask, Response, make_response, render_template
 #Initializing variables
 app = Flask(__name__)
 turbo = Turbo(app)
-camera = cv2.VideoCapture("some_m3u8_link")
+camera = cv2.VideoCapture(-1)
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 model =  keras.models.load_model("./WearMask/Model/bestModel.h5")
 
@@ -83,7 +83,7 @@ def genFrames():
             )
 
             if not success:
-                break
+                camera = cv2.VideoCapture(-1)
             else:
                 for (x, y, w, h) in frontalFaces:
                     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
