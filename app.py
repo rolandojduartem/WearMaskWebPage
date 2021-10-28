@@ -14,13 +14,12 @@ import tensorflow.keras as keras
 from flask import Flask, Response, make_response, render_template, request
 
 
-
+camera = cv2.VideoCapture(0)
 
 app = Flask(__name__)
 turbo = Turbo(app)
-camera = cv2.VideoCapture(0)
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-model =  keras.models.load_model("./UseMask/Model/bestModel.h5")
+model =  keras.models.load_model("./WearMask/Model/bestModel.h5")
 
 def predict(frame):
     finalSize = 64
@@ -66,6 +65,7 @@ def genModel():
     return {"y_prob": y_prob}   
     
 def genFrames():
+    
     while True:
         try:
             success, frame = camera.read()  # read the camera frame
@@ -106,4 +106,4 @@ def video_feed():
     return Response(genFrames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run()
