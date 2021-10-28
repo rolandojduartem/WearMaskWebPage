@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+    <meta name="description" content="Free Web tutorials">
+
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+
+    <meta name="author" content="John Doe">
+    <title>Wear the Mask! - Instructions</title>
+    {{ turbo() }}
+{% endblock %}
+
+{% block camera %}
+    <h2>Instructions:</h2>
+    <ul>
+        <li>Give permission to the app to use the camera.</li>
+        <li>Use the app in a well-lit environment.</li>
+        <li>Stay in front of the camera until the green square appears around your face.</li>
+        <li>Try the app when you have a mask on your face and when you do not.
+            (Recommendation: When you have the mask, the app may not detect your face, try to wear 
+            the mask in a different way).
+        </li>
+    </ul>
+    <h2><a href="{{ url_for('appPage') }}">Start</a></h2>
+{% endblock %}
