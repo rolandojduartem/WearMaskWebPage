@@ -1,6 +1,6 @@
-Flask==2.0.2
-numpy==1.21.3
-tensorflow-cpu==2.4.0
+Flask
+numpy
+tensorflow-cpu
 opencv-python
 turbo_flask
 gunicorn
