@@ -2,5 +2,6 @@ Flask
 numpy
 tensorflow-cpu
 opencv-python
+opencv-python-headless
 turbo_flask
 gunicorn
