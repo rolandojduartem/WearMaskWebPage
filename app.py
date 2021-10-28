@@ -1,6 +1,7 @@
 import os
 import logging
 
+#Prevents warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
 logging.getLogger('tensorflow').setLevel(logging.FATAL)
 
@@ -14,14 +15,15 @@ import tensorflow.keras as keras
 from flask import Flask, Response, make_response, render_template, request
 
 
-camera = cv2.VideoCapture(0)
-
+#Initializing variables
 app = Flask(__name__)
 turbo = Turbo(app)
+camera = cv2.VideoCapture(0)
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 model =  keras.models.load_model("./WearMask/Model/bestModel.h5")
 
 def predict(frame):
+    """ Obtaining prediction from CNN model """
     finalSize = 64
     frame = frame / 255
     frame = tf.image.resize_with_pad(frame, finalSize, finalSize)
@@ -31,10 +33,11 @@ def predict(frame):
     return y_prob[0]
 
 @app.before_first_request
-def before_first_request():
-    Thread(target=update_load).start()
+def beforeFirstRequest():
+    Thread(target=updateLoad).start()
 
-def update_load():
+def updateLoad():
+    """ Refreshing probabilities on the app """
     with app.app_context():
         while True:
             sleep(1)
@@ -42,6 +45,7 @@ def update_load():
 
 @app.context_processor            
 def genModel():
+    """ Model application functionality """
     try:
         success, frame = camera.read()  # read the camera frame
         frame = cv2.flip(frame,1)
@@ -65,7 +69,7 @@ def genModel():
     return {"y_prob": y_prob}   
     
 def genFrames():
-    
+    """ Video stream functionality """
     while True:
         try:
             success, frame = camera.read()  # read the camera frame
