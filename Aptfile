@@ -6,3 +6,4 @@ libice6
 ffmpeg
 libxext6
 python3-opencv
+python-setuptools
