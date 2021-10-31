@@ -12,7 +12,6 @@ from flask_socketio import SocketIO, emit
 import cv2
 import base64
 import numpy as np
-from time import sleep
 import tensorflow as tf
 import tensorflow.keras as keras
 from flask import Flask, make_response, render_template
@@ -71,7 +70,6 @@ def genModel():
 @socketio.on("image")
 def genFrames(imageData):
     """ Video stream functionality """
-    sleep(0.1)
     try:
         idx = imageData.find('base64,')
         base64Data  = imageData[idx+7:]
@@ -99,7 +97,6 @@ def genFrames(imageData):
         stringData = b64Head + stringData
 
         if y_prob >=50:
-            print(y_prob)
             emit('response_back', {
                 "image": stringData, 
                 "condition": "Mask", 
