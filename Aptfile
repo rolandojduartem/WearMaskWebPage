@@ -1,3 +1,4 @@
+pkg_resources
 gunicorn
 libsm6
 libxrender1
