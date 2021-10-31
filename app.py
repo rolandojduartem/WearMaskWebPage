@@ -127,4 +127,4 @@ def appPage():
     return make_response(render_template("app.html"))
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app)
