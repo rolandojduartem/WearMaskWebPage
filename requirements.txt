@@ -9,3 +9,4 @@ opencv-python
 Pillow==8.4.0
 python-socketio==4.6.0
 tensorflow-cpu==2.5.0
+pkg_resources
