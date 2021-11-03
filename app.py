@@ -20,7 +20,7 @@ from flask import Flask, make_response, render_template
 
 #Initializing variables
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode = "eventlet")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
