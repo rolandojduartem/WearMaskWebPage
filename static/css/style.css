@@ -52,21 +52,31 @@ html{
     justify-content: space-around;
 }
 
+#camera div:nth-child(2){
+    width: 100vw;
+    height: 60vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
 #camera video{
+    display: none;
     width: 0vw;
     height: 0%;
-    border-radius: 100vmax;
 }
 
 #camera img{
     width: 30vw;
-    height: 75%;
-
+    height: 50vh;
+    border-radius: 100vmax;
 }
 
 #camera canvas{
-    width: 0vw;
-    height: 0%;
+    width: 30vw;
+    height: 50vh;
+    border-radius: 100vmax;
 }
 
 #camera a{
@@ -127,7 +137,13 @@ footer a:hover{
     }
     
     #camera img{
-        width: 80%;
+        width: 50vw;
+        height: 40vh;
+    }
+
+    #camera canvas{
+        width: 50vw;
+        height: 40vh;
     }
 
     ul{

@@ -2,13 +2,15 @@ import os
 import logging
 from io import BytesIO
 from PIL import Image
-
+import eventlet
+eventlet.monkey_patch()
 #Prevents warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
 logging.getLogger('tensorflow').setLevel(logging.FATAL)
 
 from flask_socketio import SocketIO, emit
 
+from time import sleep
 import cv2
 import base64
 import numpy as np
@@ -18,7 +20,8 @@ from flask import Flask, make_response, render_template
 
 #Initializing variables
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode = "eventlet")
+
 
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 model =  keras.models.load_model("./WearMask/Model/bestModel.h5")
@@ -124,4 +127,4 @@ def appPage():
     return make_response(render_template("app.html"))
 
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, debug = True)

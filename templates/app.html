@@ -12,9 +12,12 @@
         <h2 id="condition"></h2>
         <h3 id="probability" class="yellow"></h3>
     </div>
-    <video autoplay playsinline  id="videoElement"></video>
-    <canvas id="canvasElement" width="480" height="480"></canvas>
-    <img id="photo" alt="Wear the mask - Stream"  width="480" height="480">
+    <div>
+        <video autoplay playsinline  id="videoElement"></video>
+        <canvas id="canvasElement" width="480" height="480"></canvas>
+        <img id="photo" alt="Wear the mask - Stream"  width="480" height="480">
+    </div>
+    
 {% endblock %}
 
 {% block portfolio %}
@@ -50,13 +53,13 @@
         }
 
 
-        const FPS = 10;
+        const FPS = 6;
         setInterval(() => {
             width=video.width;
             height=video.height;
             context.drawImage(video, 0, 0, width , height);
             var data = canvas.toDataURL('image/jpeg', 0.5);
-            context.clearRect(0, 0, width,height );
+            //context.clearRect(0, 0, width,height );
             socket.emit('image', data);
         }, 1000/FPS);
 
