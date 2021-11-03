@@ -2,15 +2,13 @@ import os
 import logging
 from io import BytesIO
 from PIL import Image
-import eventlet
-eventlet.monkey_patch()
+
 #Prevents warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
 logging.getLogger('tensorflow').setLevel(logging.FATAL)
 
 from flask_socketio import SocketIO, emit
 
-from time import sleep
 import cv2
 import base64
 import numpy as np
