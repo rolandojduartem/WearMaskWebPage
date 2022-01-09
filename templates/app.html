@@ -32,7 +32,6 @@
             console.log("Connected...!", socket.connected)
         });
 
-
         var canvas = document.getElementById('canvasElement');
         var context = canvas.getContext('2d');
         const video = document.querySelector("#videoElement");
@@ -48,10 +47,8 @@
                 video.play();
             })
             .catch(function (err0r) {
-
             });
         }
-
 
         const FPS = 6;
         setInterval(() => {
@@ -66,6 +63,5 @@
         socket.on('response_back', function(data){
                 photo.setAttribute('src', data.image);
                 });
-
     </script>
 {% endblock %}
