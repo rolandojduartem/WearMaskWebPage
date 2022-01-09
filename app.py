@@ -18,7 +18,7 @@ from flask import Flask, make_response, render_template
 
 #Initializing variables
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, async_mode='threading', cors_allowed_origins="*")
 
 
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
@@ -42,6 +42,7 @@ def predict(frame):
 @socketio.on("image")
 def genFrames(imageData):
     """ Video stream functionality """
+
     idx = imageData.find('base64,')
     base64Data  = imageData[idx+7:]
     decoder = BytesIO()
@@ -106,33 +107,6 @@ def genFrames(imageData):
                 #"probability": str(y_prob),
                 #"css_class": "green"
             })
-    """
-        if y_prob >=50:
-            emit('response_back', {
-                "image": stringData, 
-                "condition": "Mask", 
-                "probability": str(y_prob),
-                "css_class": "green"
-            })
-        else:
-            emit('response_back', {
-                "image": stringData, 
-                "condition": "No Mask", 
-                "probability": str(np.around(100 - y_prob, 1)),
-                "css_class": "red"
-            })
-    except:
-        _, buffer = cv2.imencode('.jpg', frame)
-        stringData = base64.b64encode(buffer).decode('utf-8')
-        b64Head = 'data:image/jpeg;base64,'
-        stringData = b64Head + stringData
-        emit('response_back', {
-                "image": stringData, 
-                "condition": "Wait a moment", 
-                "probability": "Calculating...",
-                "css_class": "yellow"
-            })
-    """
 
 @app.route("/")
 def index():
