@@ -10,7 +10,7 @@
 {% block camera %}
     <div id="load" class="load">
         <h2 id="condition"></h2>
-        <h3 id="probability" class="yellow"></h3>
+        <h3 id="probability"></h3>
     </div>
     <div>
         <video autoplay playsinline  id="videoElement"></video>
@@ -64,13 +64,15 @@
         }, 1000/FPS);
 
         socket.on('response_back', function(data){
-                photo.setAttribute('src', data.image );
-
+                photo.setAttribute('src', data.image);
+                /*
                 $('#condition').text(data.condition);
                 $('#condition').show();  
                 
                 $('#probability').text(data.probability);
+                $('#probability').attr("class", data.css_class);
                 $('#probability').show(); 
+                */
                 });
 
     </script>

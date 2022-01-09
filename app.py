@@ -24,97 +24,115 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 model =  keras.models.load_model("./WearMask/Model/bestModel.h5")
 
+finalSize = 128
+font = cv2.FONT_HERSHEY_SIMPLEX
+fontScale = 0.9
+thickness = 2
+lineType = 1
+
 def predict(frame):
     """ Obtaining prediction from CNN model """
-    finalSize = 64
-    frame = frame / 255
     frame = tf.image.resize_with_pad(frame, finalSize, finalSize)
     frame = tf.expand_dims(frame, axis = 0)
-    frame = tf.image.rgb_to_grayscale(frame)
-    y_prob = np.around(model.predict(frame)[0] * 100, 2)
+    #frame = tf.image.rgb_to_grayscale(frame)
+    frame = frame / 255
+    y_prob = np.around(model.predict(frame)[0] * 100, 1)
     return y_prob[0]
-"""
-@app.before_first_request
-def beforeFirstRequest():
-    Thread(target=updateLoad).start()
 
-def updateLoad():
-    with app.app_context():
-        while True:
-            sleep(1)
-            turbo.push(turbo.replace(render_template('probabilities.html'), 'load'))
-
-@app.context_processor            
-def genModel():
-    try:
-        frame= request.files.get('video')
-        frame = cv2.flip(frame,1)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        frontalFaces = frontalFaceCascade.detectMultiScale(
-                    gray,
-                    scaleFactor=1.1,
-                    minNeighbors=5,
-                    minSize=(128, 128),
-                    flags = cv2.CASCADE_SCALE_IMAGE
-        )
-        
-        if len(frontalFaces) != 0:
-            for (x, y, w, h) in frontalFaces:
-                frame = frame[y:y + h, x:x + w, :]
-                y_prob = predict(frame)
-        else:
-            y_prob = -1 
-    except:
-        y_prob = -1
-    return {"y_prob": y_prob}   
-"""
 @socketio.on("image")
 def genFrames(imageData):
     """ Video stream functionality """
+    idx = imageData.find('base64,')
+    base64Data  = imageData[idx+7:]
+    decoder = BytesIO()
+    decoder.write(base64.b64decode(base64Data, ' /'))
+    image = Image.open(decoder)
+    frame = np.array(image)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = cv2.flip(frame, 1)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    frontalFaces = frontalFaceCascade.detectMultiScale(
+                gray,
+                scaleFactor=1.1,
+                minNeighbors=5,
+                minSize=(128, 128),
+                flags = cv2.CASCADE_SCALE_IMAGE
+    )            
     try:
-        idx = imageData.find('base64,')
-        base64Data  = imageData[idx+7:]
-        decoder = BytesIO()
-        decoder.write(base64.b64decode(base64Data, ' /'))
-        image = Image.open(decoder)
-        frame = np.array(image)
-        frame = cv2.flip(frame, 1)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        frontalFaces = frontalFaceCascade.detectMultiScale(
-                    gray,
-                    scaleFactor=1.1,
-                    minNeighbors=5,
-                    minSize=(128, 128),
-                    flags = cv2.CASCADE_SCALE_IMAGE
-        )
-
         for (x, y, w, h) in frontalFaces:
-            cv2.rectangle(gray, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            frame = frame[y - 25:y + h + 60, x +20 :x + w - 20, :]
-            y_prob = predict(frame)
-        ret, buffer = cv2.imencode('.jpeg', gray)
+            head = frame[y:y + h, x:x + w, :]
+        y_prob = predict(head)
+        for (x, y, w, h) in frontalFaces:
+            if y_prob >= 50:
+                fontColor = (0,255,0)
+                cv2.rectangle(frame, (x, y), (x+w, y+h), fontColor, 5)
+                bottomLeftCornerOfText = (x, y - 10)
+                cv2.putText(frame, "%s %s" % ("Mask", y_prob), 
+                    bottomLeftCornerOfText, 
+                    font, 
+                    fontScale,
+                    fontColor,
+                    thickness,
+                    lineType)
+            else:
+                fontColor = (0,0,255)
+                cv2.rectangle(frame, (x, y), (x+w, y+h), fontColor, 5)
+                bottomLeftCornerOfText = (x, y - 10)
+                cv2.putText(frame, "%s %s" % ("No Mask", np.around(100 - y_prob, 1)), 
+                    bottomLeftCornerOfText, 
+                    font, 
+                    fontScale,
+                    fontColor,
+                    thickness,
+                    lineType)
+        ret, buffer = cv2.imencode('.jpg', frame)
         stringData = base64.b64encode(buffer).decode('utf-8')
         b64Head = 'data:image/jpeg;base64,'
         stringData = b64Head + stringData
-
+        emit('response_back', {
+                "image": stringData, 
+                #"condition": "Mask", 
+                #"probability": str(y_prob),
+                #"css_class": "green"
+            })
+    except:
+        _, buffer = cv2.imencode('.jpg', frame)
+        stringData = base64.b64encode(buffer).decode('utf-8')
+        b64Head = 'data:image/jpeg;base64,'
+        stringData = b64Head + stringData
+        emit('response_back', {
+                "image": stringData, 
+                #"condition": "Mask", 
+                #"probability": str(y_prob),
+                #"css_class": "green"
+            })
+    """
         if y_prob >=50:
             emit('response_back', {
                 "image": stringData, 
                 "condition": "Mask", 
-                "probability": str(y_prob)
+                "probability": str(y_prob),
+                "css_class": "green"
             })
         else:
             emit('response_back', {
                 "image": stringData, 
                 "condition": "No Mask", 
-                "probability": str(y_prob)
+                "probability": str(np.around(100 - y_prob, 1)),
+                "css_class": "red"
             })
     except:
+        _, buffer = cv2.imencode('.jpg', frame)
+        stringData = base64.b64encode(buffer).decode('utf-8')
+        b64Head = 'data:image/jpeg;base64,'
+        stringData = b64Head + stringData
         emit('response_back', {
                 "image": stringData, 
                 "condition": "Wait a moment", 
-                "probability": "Calculating..."
+                "probability": "Calculating...",
+                "css_class": "yellow"
             })
+    """
 
 @app.route("/")
 def index():
