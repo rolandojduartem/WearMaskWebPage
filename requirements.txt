@@ -1,4 +1,5 @@
 gunicorn
+eventlet
 Flask==2.0.2
 Flask-Cors==3.0.10
 flask-sock==0.4.0
