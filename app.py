@@ -19,9 +19,7 @@ from flask import Flask, make_response, render_template, copy_current_request_co
 
 #Initializing variables
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode='eventlet', manage_session=False, cors_allowed_origins="*")
-import eventlet
-eventlet.monkey_patch()
+socketio = SocketIO(app, manage_session=False, cors_allowed_origins="*")
 
 frontalFaceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 model =  keras.models.load_model("./WearMask/Model/bestModel.h5")
